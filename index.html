@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Islamic Hub</title>
     <style>
+        /* আপনার আগের সব CSS স্টাইল এখানে থাকবে */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; user-select: none; }
         .container { width: 100%; max-width: 450px; background: #f8fafc; min-height: 100vh; padding-bottom: 40px; }
@@ -15,14 +16,16 @@
         .brand-text p { font-size: 10px; color: #3b82f6; font-weight: bold; text-transform: uppercase; }
         .location-badge { background: #f1f5f9; padding: 6px 15px; border-radius: 20px; font-size: 10px; font-weight: bold; color: #64748b; }
         .hero { background: linear-gradient(180deg, #1e3a8a 0%, #1d4ed8 100%); margin: 15px 20px; padding: 25px; border-radius: 35px; color: white; box-shadow: 0 10px 25px rgba(30, 58, 138, 0.2); }
-        .hero-top { display: flex; justify-content: space-between; }
-        .next-prayer-title { font-size: 28px; font-weight: 900; margin-top: 5px; }
-        .countdown { color: #fde047; font-size: 18px; font-weight: 600; }
-        .date-box { background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        .date-box strong { font-size: 24px; display: block; }
-        .fasting-times { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
+        .hero-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .next-prayer-title { font-size: 24px; font-weight: 900; margin-top: 5px; }
+        .countdown { color: #fde047; font-size: 16px; font-weight: 600; }
+        .date-container { display: flex; gap: 8px; }
+        .date-box { background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 18px; text-align: center; border: 1px solid rgba(255,255,255,0.1); min-width: 65px; }
+        .date-box span { font-size: 9px; display: block; color: #bfdbfe; font-weight: bold; }
+        .date-box strong { font-size: 20px; display: block; }
+        .fasting-times { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
         .fast-card { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 20px; }
-        .fast-card h3 { font-size: 20px; color: #ffffff; }
+        .fast-card h3 { font-size: 18px; color: #ffffff; }
         .prayer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 20px; }
         .prayer-card { background: white; padding: 18px 10px; border-radius: 25px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.04); }
         .p-time { font-size: 13px; color: #1e3a8a; font-weight: 900; }
@@ -30,7 +33,6 @@
         .percent { font-size: 36px; font-weight: 900; }
         .progress-bg { background: #1e293b; height: 12px; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
         .progress-fill { background: linear-gradient(90deg, #3b82f6, #60a5fa); height: 100%; width: 0%; transition: 0.4s; }
-        .tracker-btns { display: flex; gap: 8px; }
         .t-btn { flex: 1; padding: 12px 0; background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 30px; font-size: 11px; font-weight: bold; cursor: pointer; }
         .t-btn.active { background: #3b82f6 !important; color: white !important; }
     </style>
@@ -41,82 +43,129 @@
             <div class="brand">
                 <div class="logo" id="logo">M</div>
                 <div class="brand-text">
-                    <h1 id="brand-name">Loading...</h1>
+                    <h1 id="brand-name">লোডিং...</h1>
                     <p>Islamic Hub</p>
                 </div>
             </div>
-            <div class="location-badge" id="loc">Location</div>
+            <div class="location-badge" id="loc">অবস্থান</div>
         </header>
 
         <div class="hero">
             <div class="hero-top">
                 <div>
-                    <p style="color:#93c5fd">Assalamu Alaikum</p>
-                    <h2 class="next-prayer-title">Next Salat</h2>
-                    <p class="countdown" id="next-p-time">--:--</p>
+                    <p style="color:#93c5fd; font-size: 12px;">আসসালামু আলাইকুম</p>
+                    <h2 class="next-prayer-title">পরবর্তী সালাত</h2>
+                    <p class="countdown" id="next-p-time">হিসাব হচ্ছে...</p>
                 </div>
-                <div class="date-box">
-                    <span id="h-month">Month</span>
-                    <strong id="h-day">00</strong>
+                <div class="date-container">
+                    <div class="date-box"><span id="eng-month">মাস</span><strong id="eng-day">০০</strong></div>
+                    <div class="date-box" style="background: rgba(255,255,255,0.2);"><span id="h-month">হিজরি</span><strong id="h-day">০০</strong></div>
                 </div>
             </div>
             <div class="fasting-times">
-                <div class="fast-card">
-                    <p style="font-size:10px">Sehri End</p>
-                    <h3 id="s-time">--:--</h3>
-                </div>
-                <div class="fast-card">
-                    <p style="font-size:10px">Iftar Time</p>
-                    <h3 id="i-time">--:--</h3>
-                </div>
+                <div class="fast-card"><p style="font-size:10px; color: #bfdbfe;">সেহরি শেষ</p><h3 id="s-time">--:--</h3></div>
+                <div class="fast-card"><p style="font-size:10px; color: #bfdbfe;">ইফতারের সময়</p><h3 id="i-time">--:--</h3></div>
             </div>
         </div>
 
-        <div style="margin:25px 25px 15px; display:flex; justify-content:space-between">
-            <h2 style="color:#1e3a8a">Salat Schedule</h2>
-            <span id="h-year" style="font-size:10px; color:#94a3b8">Year</span>
+        <div style="margin:25px 25px 15px; display:flex; justify-content:space-between; align-items: center;">
+            <h2 style="color:#1e3a8a; font-size: 18px;">নামাজের সময়সূচী</h2>
+            <span id="h-year" style="font-size:10px; color:#94a3b8; font-weight: bold;">-- হিজরি</span>
         </div>
         <div class="prayer-grid" id="p-grid"></div>
 
         <div class="tracker">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
-                <h4>Premium Tracker</h4>
+                <h4>সালাত ট্র্যাকার</h4>
                 <div class="percent" id="pct">0%</div>
             </div>
             <div class="progress-bg"><div class="progress-fill" id="p-bar"></div></div>
-            <div class="tracker-btns" id="t-btns"></div>
+            <div style="display: flex; gap: 8px;" id="t-btns"></div>
         </div>
     </div>
 
     <script src="data.js"></script>
     <script>
+        // সময়কে মিনিটে রূপান্তর করার ফাংশন
+        function timeToMinutes(timeStr) {
+            let [time, modifier] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':').map(Number);
+            if (modifier === 'PM' && hours < 12) hours += 12;
+            if (modifier === 'AM' && hours === 12) hours = 0;
+            return hours * 60 + minutes;
+        }
+
+        // সংখ্যাকে বাংলায় রূপান্তর
+        function toBengaliNum(num) {
+            const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            return num.toString().split('').map(d => bengaliDigits[d] || d).join('');
+        }
+
+        function updateNextPrayer() {
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            // সূর্যোদয় বাদ দিয়ে শুধু ৫ ওয়াক্ত নামাজ ফিল্টার করা
+            const dailyPrayers = PRAYER_DATA.times.filter(p => p.name !== "সূর্যোদয়");
+            
+            let nextP = null;
+            let minDiff = Infinity;
+
+            dailyPrayers.forEach(p => {
+                const pMin = timeToMinutes(p.time);
+                let diff = pMin - currentMinutes;
+                
+                // যদি সময় পার হয়ে যায় (পরের দিনের ফজর)
+                if (diff < 0) diff += 1440; 
+                
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    nextP = p;
+                }
+            });
+
+            if (nextP) {
+                const hours = Math.floor(minDiff / 60);
+                const minutes = minDiff % 60;
+                let text = `${nextP.name}: `;
+                if (hours > 0) text += `${toBengaliNum(hours)} ঘণ্টা `;
+                text += `${toBengaliNum(minutes)} মি. বাকি`;
+                document.getElementById('next-p-time').innerText = text;
+            }
+        }
+
         function render() {
             document.getElementById('brand-name').innerText = PRAYER_DATA.appName;
             document.getElementById('logo').innerText = PRAYER_DATA.appName[0];
             document.getElementById('loc').innerText = PRAYER_DATA.location;
+            document.getElementById('eng-day').innerText = PRAYER_DATA.engDay;
+            document.getElementById('eng-month').innerText = PRAYER_DATA.engMonth;
             document.getElementById('h-day').innerText = PRAYER_DATA.hijriDay;
             document.getElementById('h-month').innerText = PRAYER_DATA.hijriMonth;
             document.getElementById('h-year').innerText = PRAYER_DATA.hijriYear;
             document.getElementById('s-time').innerText = PRAYER_DATA.sehri;
             document.getElementById('i-time').innerText = PRAYER_DATA.iftar;
-            document.getElementById('next-p-time').innerText = PRAYER_DATA.nextPrayer;
 
             document.getElementById('p-grid').innerHTML = PRAYER_DATA.times.map(p => `
                 <div class="prayer-card">
                     <span style="font-size:24px">${p.icon}</span><br>
-                    <span style="font-size:10px; color:#94a3b8">${p.name}</span>
+                    <span style="font-size:10px; color:#94a3b8; font-weight:bold;">${p.name}</span>
                     <p class="p-time">${p.time}</p>
                 </div>
             `).join('');
 
-            const farz = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+            const farz = ["ফজর", "যোহর", "আসর", "মাগরিব", "এশা"];
             document.getElementById('t-btns').innerHTML = farz.map(n => `<button class="t-btn" onclick="track(this)">${n}</button>`).join('');
+            
+            updateNextPrayer();
+            setInterval(updateNextPrayer, 60000); // প্রতি মিনিটে আপডেট হবে
         }
+
         function track(btn) {
             btn.classList.toggle('active');
             const count = document.querySelectorAll('.t-btn.active').length;
             const percentage = Math.round((count / 5) * 100);
-            document.getElementById('pct').innerText = percentage + '%';
+            document.getElementById('pct').innerText = toBengaliNum(percentage) + '%';
             document.getElementById('p-bar').style.width = percentage + '%';
         }
         window.onload = render;
