@@ -44,7 +44,7 @@
                 <div class="logo" id="logo">J</div>
                 <div class="brand-text">
                     <h1 id="brand-name">লোডিং...</h1>
-                    <p></p>
+                    <p id="sub-title">ইসলামিক হাব</p>
                 </div>
             </div>
             <div class="location-badge" id="loc">অবস্থান</div>
@@ -86,18 +86,20 @@
 
     <script src="data.js"></script>
     <script>
-        // LocalStorage ডাটা লোড করা
-        let prayerProgress = JSON.parse(localStorage.getItem('jamalpur_tracker')) || {
-            "ফজর": false, "যোহর": false, "আসর": false, "মাগরিব": false, "এশা": false
-        };
+        // গ্লোবাল ভেরিয়েবল আজকের ডেটার জন্য
+        let TODAY_DATA = null;
 
-        // অটো-রিসেট চেক (রাত ১২টা পার হলে)
-        const lastSavedDate = localStorage.getItem('last_track_date');
-        const todayStr = new Date().toDateString();
-        if (lastSavedDate !== todayStr) {
-            prayerProgress = { "ফজর": false, "যোহর": false, "আসর": false, "মাগরিব": false, "এশা": false };
-            localStorage.setItem('jamalpur_tracker', JSON.stringify(prayerProgress));
-            localStorage.setItem('last_track_date', todayStr);
+        function getTodayData() {
+            const todayStr = new Date().toDateString(); // যেমন: "Sun Feb 22 2026"
+            // data.js থেকে আজকের তারিখের অবজেক্ট খুঁজে বের করা
+            const found = PRAYER_DATA_LIST.find(d => d.date === todayStr);
+            
+            if (found) {
+                TODAY_DATA = { ...APP_SETTINGS, ...found };
+            } else {
+                // ডেটা না পাওয়া গেলে তালিকার প্রথমটি ডিফল্ট হিসেবে নেবে
+                TODAY_DATA = { ...APP_SETTINGS, ...PRAYER_DATA_LIST[0] };
+            }
         }
 
         function timeToMinutes(timeStr) {
@@ -114,9 +116,10 @@
         }
 
         function updateNextPrayer() {
+            if (!TODAY_DATA) return;
             const now = new Date();
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
-            const dailyPrayers = PRAYER_DATA.times.filter(p => p.name !== "সূর্যোদয়");
+            const dailyPrayers = TODAY_DATA.times.filter(p => p.name !== "সূর্যোদয়");
             
             let nextP = null;
             let minDiff = Infinity;
@@ -141,19 +144,34 @@
             }
         }
 
-        function render() {
-            document.getElementById('brand-name').innerText = PRAYER_DATA.appName;
-            document.getElementById('logo').innerText = PRAYER_DATA.appName[0];
-            document.getElementById('loc').innerText = PRAYER_DATA.location;
-            document.getElementById('eng-day').innerText = PRAYER_DATA.engDay;
-            document.getElementById('eng-month').innerText = PRAYER_DATA.engMonth;
-            document.getElementById('h-day').innerText = PRAYER_DATA.hijriDay;
-            document.getElementById('h-month').innerText = PRAYER_DATA.hijriMonth;
-            document.getElementById('h-year').innerText = PRAYER_DATA.hijriYear;
-            document.getElementById('s-time').innerText = PRAYER_DATA.sehri;
-            document.getElementById('i-time').innerText = PRAYER_DATA.iftar;
+        let prayerProgress = JSON.parse(localStorage.getItem('jamalpur_tracker')) || {
+            "ফজর": false, "যোহর": false, "আসর": false, "মাগরিব": false, "এশা": false
+        };
 
-            document.getElementById('p-grid').innerHTML = PRAYER_DATA.times.map(p => `
+        function render() {
+            getTodayData(); // আজকের ডেটা লোড করা
+
+            // অটো-রিসেট লজিক
+            const lastDate = localStorage.getItem('last_track_date');
+            const todayStr = new Date().toDateString();
+            if (lastDate !== todayStr) {
+                prayerProgress = { "ফজর": false, "যোহর": false, "আসর": false, "মাগরিব": false, "এশা": false };
+                localStorage.setItem('jamalpur_tracker', JSON.stringify(prayerProgress));
+                localStorage.setItem('last_track_date', todayStr);
+            }
+
+            document.getElementById('brand-name').innerText = TODAY_DATA.appName;
+            document.getElementById('logo').innerText = TODAY_DATA.appName[0];
+            document.getElementById('loc').innerText = TODAY_DATA.location;
+            document.getElementById('eng-day').innerText = TODAY_DATA.engDay;
+            document.getElementById('eng-month').innerText = TODAY_DATA.engMonth;
+            document.getElementById('h-day').innerText = TODAY_DATA.hijriDay;
+            document.getElementById('h-month').innerText = TODAY_DATA.hijriMonth;
+            document.getElementById('h-year').innerText = TODAY_DATA.hijriYear;
+            document.getElementById('s-time').innerText = TODAY_DATA.sehri;
+            document.getElementById('i-time').innerText = TODAY_DATA.iftar;
+
+            document.getElementById('p-grid').innerHTML = TODAY_DATA.times.map(p => `
                 <div class="prayer-card">
                     <span style="font-size:24px">${p.icon}</span><br>
                     <span style="font-size:10px; color:#94a3b8; font-weight:bold;">${p.name}</span>
@@ -175,7 +193,7 @@
             btn.classList.toggle('active');
             prayerProgress[name] = btn.classList.contains('active');
             localStorage.setItem('jamalpur_tracker', JSON.stringify(prayerProgress));
-            localStorage.setItem('last_track_date', todayStr);
+            localStorage.setItem('last_track_date', new Date().toDateString());
             updateTrackerUI();
         }
 
